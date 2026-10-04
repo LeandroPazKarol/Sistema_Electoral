@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Mesa {
+  id        String   @id @default(uuid())
+  nombre    String   @unique
+  votos     Voto[]
+  createdAt DateTime @default(now())
+}
+
+model Partido {
+  id        String   @id @default(uuid())
+  nombre    String   @unique
+  color     String   @default("#3b82f6")
+  votos     Voto[]
+}
+
+model Voto {
+  id          String    @id @default(uuid())
+  mesaId      String
+  partidoId   String
+  cantidad    Int       @default(0)
+  
+  mesa        Mesa      @relation(fields: [mesaId], references: [id], onDelete: Cascade)
+  partido     Partido   @relation(fields: [partidoId], references: [id], onDelete: Cascade)
+
+  @@unique([mesaId, partidoId])
+}
